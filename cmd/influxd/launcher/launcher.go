@@ -1253,6 +1253,7 @@ func (m *Launcher) run(ctx context.Context) (err error) {
 		ChronografService:               chronografSvc,
 		SecretService:                   secretSvc,
 		LookupService:                   resourceResolver,
+		DocumentService:                 m.kvService,
 		OrgLookupService:                resourceResolver,
 		WriteEventRecorder:              infprom.NewEventRecorder("write"),
 		QueryEventRecorder:              infprom.NewEventRecorder("query"),
