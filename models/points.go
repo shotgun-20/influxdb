@@ -1496,7 +1496,7 @@ func (p *point) Tags() Tags {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("RECOVER in Tags", r)
-			fmt.Printf("P.KEY: %s\n", p.key)
+			fmt.Printf("P.KEY: %s\n===\n", p.key)
 		}
 	}()
 
@@ -1622,6 +1622,9 @@ func parseTags(buf []byte, dst Tags) Tags {
 	walkTags(buf, func(key, value []byte) bool {
 		if i >= limit {
 			fmt.Printf("OVERTAG: i=%d, n=%d, key=%s, value=%s\n", i, n, key, value)
+			for _, item = range dst {
+				fmt.Printf("TAG DUMP: key=%s, value=%s\n", item.key, item.Value)
+			}
 		}
 		dst[i].Key, dst[i].Value = key, value
 		i++
