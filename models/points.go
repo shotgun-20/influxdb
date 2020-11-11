@@ -1602,8 +1602,11 @@ func parseTags(buf []byte, dst Tags) Tags {
 
 	// Ensure existing behaviour when point has no tags and nil slice passed in.
 	if dst == nil {
+		fmt.Printf("POINTS: point with no tags received\n")
 		dst = Tags{}
 	}
+
+	limit := cap(dst)
 
 	// Series keys can contain escaped commas, therefore the number of commas
 	// in a series key only gives an estimation of the upper bound on the number
@@ -1614,7 +1617,7 @@ func parseTags(buf []byte, dst Tags) Tags {
 		//fmt.Printf("TAGS: key=%s, value=%s\n", key, value)
 		dst[i].Key, dst[i].Value = key, value
 		i++
-		if i > n {
+		if i > limit {
 			fmt.Printf("OVERTAG: i=%d, n=%d, key=%s, value=%s\n", i, n, key, value)
 		}
 		return true
