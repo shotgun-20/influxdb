@@ -1619,17 +1619,14 @@ func parseTags(buf []byte, dst Tags) Tags {
 	// in a series key only gives an estimation of the upper bound on the number
 	// of tags.
 	var i int
-	//fmt.Printf("PARSE TAGS\n")
 	walkTags(buf, func(key, value []byte) bool {
-		//fmt.Printf("TAGS: key=%s, value=%s\n", key, value)
-		dst[i].Key, dst[i].Value = key, value
-		i++
-		if i > limit {
+		if i >= limit {
 			fmt.Printf("OVERTAG: i=%d, n=%d, key=%s, value=%s\n", i, n, key, value)
 		}
+		dst[i].Key, dst[i].Value = key, value
+		i++
 		return true
 	})
-	//fmt.Printf("PARSED TAGS: %d\n", i)
 	return dst[:i]
 }
 
