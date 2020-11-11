@@ -1493,6 +1493,13 @@ func (p *point) Round(d time.Duration) {
 
 // Tags returns the tag set for the point.
 func (p *point) Tags() Tags {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("RECOVER in Tags", r)
+			fmt.Printf("P.KEY: %s\n", p.key)
+		}
+	}()
+
 	if p.cachedTags != nil {
 		return p.cachedTags
 	}
