@@ -1622,7 +1622,7 @@ func parseTags(buf []byte, dst Tags) Tags {
 	walkTags(buf, func(key, value []byte) bool {
 		if i >= limit {
 			fmt.Printf("OVERTAG: i=%d, n=%d, key=%s, value=%s\n", i, n, key, value)
-			for _, item = range dst {
+			for _, item := range dst {
 				fmt.Printf("TAG DUMP: key=%s, value=%s\n", item.key, item.Value)
 			}
 		}
