@@ -1493,12 +1493,10 @@ func (p *point) Round(d time.Duration) {
 
 // Tags returns the tag set for the point.
 func (p *point) Tags() Tags {
-	var tmp []byte
-	copy(tmp, p.key)
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("RECOVER in Tags", r)
-			fmt.Printf("P.KEY: %s\n===\n", tmp)
+			fmt.Printf("P.KEY: %s\n===\n", p.key)
 		}
 	}()
 
@@ -1598,6 +1596,8 @@ func walkFields(buf []byte, fn func(key, value []byte) bool) error {
 // parseTags parses buf into the provided destination tags, returning destination
 // Tags, which may have a different length and capacity.
 func parseTags(buf []byte, dst Tags) Tags {
+	var tmp []byte
+	copy(tmp, buf)
 	if len(buf) == 0 {
 		return nil
 	}
@@ -1624,6 +1624,7 @@ func parseTags(buf []byte, dst Tags) Tags {
 	walkTags(buf, func(key, value []byte) bool {
 		if i >= limit {
 			fmt.Printf("OVERTAG: i=%d, n=%d, key=%s, value=%s\n", i, n, key, value)
+			fmt.Printf("TAG BUF: %s\n", tmp)
 			for _, item := range dst {
 				fmt.Printf("TAG DUMP: key=%s, value=%s\n", item.Key, item.Value)
 			}
