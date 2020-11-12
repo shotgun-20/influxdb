@@ -1596,7 +1596,7 @@ func walkFields(buf []byte, fn func(key, value []byte) bool) error {
 // parseTags parses buf into the provided destination tags, returning destination
 // Tags, which may have a different length and capacity.
 func parseTags(buf []byte, dst Tags) Tags {
-	var tmp []byte
+	tmp := fmt.Sprint(buf)
 	copy(tmp, buf)
 	if len(buf) == 0 {
 		return nil
