@@ -1596,13 +1596,17 @@ func walkFields(buf []byte, fn func(key, value []byte) bool) error {
 // parseTags parses buf into the provided destination tags, returning destination
 // Tags, which may have a different length and capacity.
 func parseTags(buf []byte, dst Tags) Tags {
-	tmp := fmt.Sprint(string(buf))
+	var tmp []byte
+	copy(tmp, buf)
 
 	if len(buf) == 0 {
 		return nil
 	}
 
 	for attempt, i := 0, 0; attempt < 2; attempt++ {
+		if attempt > 0 {
+			copy(buf, tmp)
+		}
 		fail := false
 		n := bytes.Count(buf, []byte(","))
 		if cap(dst) < n {
@@ -1625,7 +1629,7 @@ func parseTags(buf []byte, dst Tags) Tags {
 		walkTags(buf, func(key, value []byte) bool {
 			if i >= limit {
 				fmt.Printf("OVERTAG: i=%d, n=%d, key=%s, value=%s\n", i, n, key, value)
-				fmt.Printf("TAG BUF: %s\n", tmp)
+				fmt.Printf("TAG BUF: %s\n", string(tmp))
 				fail = true
 				for _, item := range dst {
 					fmt.Printf("TAG DUMP: key=%s, value=%s\n", item.Key, item.Value)
