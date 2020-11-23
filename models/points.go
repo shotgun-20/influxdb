@@ -1603,6 +1603,7 @@ func parseTags(buf []byte, dst Tags) Tags {
 	}
 
 	for attempt, i := 0, 0; attempt < 2; attempt++ {
+		fail := false
 		n := bytes.Count(buf, []byte(","))
 		if cap(dst) < n {
 			dst = make(Tags, n)
@@ -1627,14 +1628,17 @@ func parseTags(buf []byte, dst Tags) Tags {
 				fmt.Printf("TAG BUF: %s\n", tmp)
 				for _, item := range dst {
 					fmt.Printf("TAG DUMP: key=%s, value=%s\n", item.Key, item.Value)
+					fail = true
+					return false
 				}
-				continue
 			}
 			dst[i].Key, dst[i].Value = key, value
 			i++
 			return true
 		})
-		return dst[:i]
+		if fail = false {
+			eturn dst[:i]
+		}
 	}
 	return nil
 }
