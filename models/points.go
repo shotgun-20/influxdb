@@ -1640,6 +1640,7 @@ func parseTags(buf []byte, dst Tags) Tags {
 			return dst[:i]
 		}
 	}
+	fmt.Printf("POINTS: parsing failure\n")
 	return nil
 }
 
