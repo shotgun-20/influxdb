@@ -1597,42 +1597,46 @@ func walkFields(buf []byte, fn func(key, value []byte) bool) error {
 // Tags, which may have a different length and capacity.
 func parseTags(buf []byte, dst Tags) Tags {
 	tmp := fmt.Sprint(string(buf))
+
 	if len(buf) == 0 {
 		return nil
 	}
 
-	n := bytes.Count(buf, []byte(","))
-	if cap(dst) < n {
-		dst = make(Tags, n)
-	} else {
-		dst = dst[:n]
-	}
-
-	// Ensure existing behaviour when point has no tags and nil slice passed in.
-	if dst == nil {
-		fmt.Printf("POINTS: point with no tags received\n")
-		dst = Tags{}
-	}
-
-	limit := cap(dst)
-
-	// Series keys can contain escaped commas, therefore the number of commas
-	// in a series key only gives an estimation of the upper bound on the number
-	// of tags.
-	var i int
-	walkTags(buf, func(key, value []byte) bool {
-		if i >= limit {
-			fmt.Printf("OVERTAG: i=%d, n=%d, key=%s, value=%s\n", i, n, key, value)
-			fmt.Printf("TAG BUF: %s\n", tmp)
-			for _, item := range dst {
-				fmt.Printf("TAG DUMP: key=%s, value=%s\n", item.Key, item.Value)
-			}
+	for attempt, i := 0, 0; attempt < 2; attempt++ {
+		n := bytes.Count(buf, []byte(","))
+		if cap(dst) < n {
+			dst = make(Tags, n)
+		} else {
+			dst = dst[:n]
 		}
-		dst[i].Key, dst[i].Value = key, value
-		i++
-		return true
-	})
-	return dst[:i]
+
+		// Ensure existing behaviour when point has no tags and nil slice passed in.
+		if dst == nil {
+			fmt.Printf("POINTS: point with no tags received\n")
+			dst = Tags{}
+		}
+
+		limit := cap(dst)
+
+		// Series keys can contain escaped commas, therefore the number of commas
+		// in a series key only gives an estimation of the upper bound on the number
+		// of tags.
+		walkTags(buf, func(key, value []byte) bool {
+			if i >= limit {
+				fmt.Printf("OVERTAG: i=%d, n=%d, key=%s, value=%s\n", i, n, key, value)
+				fmt.Printf("TAG BUF: %s\n", tmp)
+				for _, item := range dst {
+					fmt.Printf("TAG DUMP: key=%s, value=%s\n", item.Key, item.Value)
+				}
+				continue
+			}
+			dst[i].Key, dst[i].Value = key, value
+			i++
+			return true
+		})
+		return dst[:i]
+	}
+	return nil
 }
 
 // MakeKey creates a key for a set of tags.
