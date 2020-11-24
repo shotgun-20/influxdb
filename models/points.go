@@ -1597,7 +1597,7 @@ func walkFields(buf []byte, fn func(key, value []byte) bool) error {
 // Tags, which may have a different length and capacity.
 func parseTags(buf []byte, dst Tags) Tags {
 	var tmp []byte
-	copy(tmp, buf)
+	tmp := Sprintf("%s", string(buf))
 
 	if len(buf) == 0 {
 		return nil
@@ -1605,7 +1605,7 @@ func parseTags(buf []byte, dst Tags) Tags {
 
 	for attempt, i := 0, 0; attempt < 2; attempt++ {
 		if attempt > 0 {
-			copy(buf, tmp)
+			buf = []byte(tmp)
 		}
 		fail := false
 		n := bytes.Count(buf, []byte(","))
